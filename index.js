@@ -1,5 +1,4 @@
 const express = require("express");
-const fs = require("node:fs");
 const app = express();
 const bookRouter = require("./routes/book.routes");
 const port = 8000;
