@@ -1,4 +1,5 @@
 const express = require("express");
+const fs = require("node:fs");
 const app = express();
 const port = 8000;
 
@@ -18,6 +19,12 @@ const books = [
 
 // Middlewares (Plugins)
 app.use(express.json());
+
+app.use((req, res, next) => {
+  const log = `\n[${Date.now()} ${req.method} ${req.path}]`;
+  fs.appendFileSync("log.txt", log, "utf-8");
+  next();
+});
 
 // Routes
 app.get("/books", (req, res) => {
