@@ -20,11 +20,18 @@ const books = [
 // Middlewares (Plugins)
 app.use(express.json());
 
-app.use((req, res, next) => {
+function logger_middleware(req, res, next) {
   const log = `\n[${Date.now()} ${req.method} ${req.path}]`;
   fs.appendFileSync("log.txt", log, "utf-8");
   next();
-});
+}
+
+function custom_middleware(req, res, next) {
+  console.log(`Custom Middleware running`);
+  next();
+}
+
+app.use(logger_middleware);
 
 // Routes
 app.get("/books", (req, res) => {
@@ -32,7 +39,7 @@ app.get("/books", (req, res) => {
   res.json(books);
 });
 
-app.get("/books/:id", (req, res) => {
+app.get("/books/:id", custom_middleware, (req, res) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
     return res.status(400).json({ error: `Id must be of type INT` });
