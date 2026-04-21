@@ -10,7 +10,7 @@ exports.showall = async (req, res) => {
 exports.pickid = async (req, res) => {
   try {
     const id = req.params.id;
-    const [book] = db
+    const [book] = await db
       .select()
       .from(bookstable)
       .where(eq(bookstable.id, id))
@@ -46,7 +46,7 @@ exports.addit = async (req, res) => {
 };
 
 exports.delit = async (req, res) => {
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
 
   const deleted = await db.delete(bookstable).where(eq(bookstable.id, id));
   if (deleted.length === 0) {
