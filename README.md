@@ -1,140 +1,184 @@
-# 📚 Express Book Store API
+# 📚 Express Book Store
 
-A RESTful API built with **Node.js** and **Express.js** for managing a collection of books.  
-This project demonstrates core backend concepts such as routing, request handling, validation, and CRUD operations.
-
----
-
-## 🚀 Features
-
-- Retrieve all books
-- Retrieve a book by ID
-- Add a new book with validation
-- Delete a book by ID
-- Proper error handling with HTTP status codes
+A RESTful API for managing a book store — built with **Express.js v5**, **Drizzle ORM**, and **PostgreSQL**, containerized with Docker.
 
 ---
 
-## 🛠️ Tech Stack
+## 🧱 Tech Stack
 
-- **Backend:** Node.js
-- **Framework:** Express.js
-- **Language:** JavaScript
+| Layer     | Technology              |
+| --------- | ----------------------- |
+| Runtime   | Node.js                 |
+| Framework | Express.js v5           |
+| ORM       | Drizzle ORM             |
+| Database  | PostgreSQL 17.4         |
+| Container | Docker & Docker Compose |
+| Config    | dotenv                  |
 
 ---
 
-## 📂 Project Structure
+## 📁 Project Structure
 
 ```
 Express-Book-Store/
-│
-├── index.js
+├── controller/
+│   └── rootcontroller.js       # Route controllers / handler logic
+├── db/
+│   └── index.js                # Database connection (Drizzle + pg)
+├── drizzle/                    # Auto-generated Drizzle migrations
+│   └── logger.js               # Drizzle query logger
+├── model/
+│   ├── author.model.js         # Author schema/model
+│   ├── book.model.js           # Book schema/model
+│   └── index.js                # Model exports
+├── routes/
+│   └── book.routes.js          # Book-related API routes
+├── .env                        # Environment variables (not committed)
+├── .gitignore
+├── docker-compose.yml          # PostgreSQL Docker service
+├── drizzle.config.js           # Drizzle ORM configuration
+├── index.js                    # App entry point
 ├── package.json
-├── package-lock.json
-└── .gitignore
+└── README.md
 ```
 
 ---
 
-## ⚙️ Installation & Setup
+## ⚙️ Prerequisites
 
-1. Clone the repository:
+- [Node.js](https://nodejs.org/) (v18+)
+- [Docker](https://www.docker.com/) & Docker Compose
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/your-username/express-book-store.git
-```
-
-2. Navigate to the project folder:
-
-```bash
 cd express-book-store
 ```
 
-3. Install dependencies:
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-4. Start the server:
+### 3. Set up environment variables
+
+Create a `.env` file in the project root:
+
+```env
+DATABASE_URL=postgresql://postgres:admin@localhost:5432/book-store
+PORT=3000
+```
+
+### 4. Start the database
 
 ```bash
-node index.js
+docker-compose up -d
 ```
 
----
+This spins up a PostgreSQL 17.4 instance:
 
-## 🌐 API Endpoints
+| Config   | Value        |
+| -------- | ------------ |
+| Host     | `localhost`  |
+| Port     | `5432`       |
+| Database | `book-store` |
+| User     | `postgres`   |
+| Password | `admin`      |
 
-### 📖 Get all books
-
-```
-GET /books
-```
-
----
-
-### 🔍 Get book by ID
-
-```
-GET /books/:id
-```
-
----
-
-### ➕ Add a new book
-
-```
-POST /books
-```
-
-#### Request Body
-
-```json
-{
-  "title": "Book Name",
-  "author": "Author Name"
-}
-```
-
----
-
-### ❌ Delete a book
-
-```
-DELETE /books/:id
-```
-
----
-
-## ⚠️ Error Handling
-
-| Status Code | Description                 |
-| ----------- | --------------------------- |
-| 200         | Success                     |
-| 201         | Resource created            |
-| 400         | Bad request (invalid input) |
-| 404         | Resource not found          |
-
----
-
-## 🧪 Example Usage
-
-### Create a book
+### 5. Run database migrations
 
 ```bash
-curl -X POST http://localhost:8000/books \
--H "Content-Type: application/json" \
--d '{"title":"Atomic Habits","author":"James Clear"}'
+npx drizzle-kit migrate
+```
+
+### 6. Start the server
+
+```bash
+npm start
+```
+
+The server starts with `--watch` mode (auto-restarts on file changes).  
+Default: **http://localhost:3000**
+
+---
+
+## 📡 API Endpoints
+
+### Books
+
+| Method   | Endpoint     | Description       |
+| -------- | ------------ | ----------------- |
+| `GET`    | `/books`     | Get all books     |
+| `GET`    | `/books/:id` | Get a book by ID  |
+| `POST`   | `/books`     | Create a new book |
+| `PUT`    | `/books/:id` | Update a book     |
+| `DELETE` | `/books/:id` | Delete a book     |
+
+### Authors
+
+| Method | Endpoint       | Description         |
+| ------ | -------------- | ------------------- |
+| `GET`  | `/authors`     | Get all authors     |
+| `GET`  | `/authors/:id` | Get an author by ID |
+| `POST` | `/authors`     | Create a new author |
+
+> Update this section as you add more routes.
+
+---
+
+## 🛠️ Drizzle ORM Commands
+
+```bash
+# Generate a new migration from schema changes
+npx drizzle-kit generate
+
+# Apply pending migrations
+npx drizzle-kit migrate
+
+# Open Drizzle Studio (database GUI)
+npx drizzle-kit studio
 ```
 
 ---
 
-## 📌 Future Improvements
+## 🐳 Docker Reference
 
-- Add update functionality (PUT/PATCH)
-- Connect to a database (MongoDB)
-- Add authentication
-- Improve project structure (MVC pattern)
+```bash
+# Start PostgreSQL in background
+docker-compose up -d
+
+# Stop the container
+docker-compose down
+
+# Stop and remove volumes (wipes database)
+docker-compose down -v
+```
 
 ---
+
+## 📦 Scripts
+
+```bash
+npm start       # Start server with --watch (auto-reload)
+```
+
+---
+
+## 🌿 Environment Variables
+
+| Variable       | Description                  | Example                                                 |
+| -------------- | ---------------------------- | ------------------------------------------------------- |
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://postgres:admin@localhost:5432/book-store` |
+| `PORT`         | Port the server listens on   | `3000`                                                  |
+
+---
+
+## 📄 License
+
+This project is licensed under the **ISC License**.
